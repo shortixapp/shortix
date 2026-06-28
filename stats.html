@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics — Shortix</title>
+<link rel="icon" type="image/png" href="/images/icon-32.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0d0d1a">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.__SUPABASE_URL = '';
+  window.__SUPABASE_ANON_KEY = '';
+</script>
+</head>
+<body>
+<div class="bg-aurora"></div>
+<div class="app-shell">
+
+  <!-- Mobile top bar -->
+  <div class="mobile-topbar">
+    <a href="/" class="brand">
+      <img src="/images/icon-128.png" alt="Shortix" style="width:24px;height:24px;">
+      <span>Shortix</span>
+    </a>
+    <button class="btn-icon hamburger-btn" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a href="/" class="brand"><img src="/images/icon-128.png" alt="Shortix" style="width:26px;height:26px;"><span>Shortix</span></a>
+    <a href="/dashboard.html" class="side-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-6 9 6v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>
+      <span data-i18n="side.home">Dashboard</span>
+    </a>
+    <a href="/stats.html" class="side-link active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l3 9 4-18 3 9h4"/></svg>
+      <span data-i18n="side.analytics">Analytics</span>
+    </a>
+    <div class="side-spacer"></div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <h1 data-i18n="stats.page.title">Link analytics</h1>
+      <span id="stats-link-label" class="muted" style="font-family:var(--mono);"></span>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card glass"><div class="lbl" data-i18n="dash.totalClicks">Total clicks</div><div class="val" id="s-clicks">0</div></div>
+      <div class="kpi-card glass"><div class="lbl" data-i18n="stats.byCountry">Top country</div><div class="val" id="s-country" style="font-size:16px;">—</div></div>
+      <div class="kpi-card glass"><div class="lbl" data-i18n="stats.byDevice">Top device</div><div class="val" id="s-device" style="font-size:16px;">—</div></div>
+      <div class="kpi-card glass"><div class="lbl" data-i18n="dash.th.created">Created</div><div class="val" id="s-created" style="font-size:16px;">—</div></div>
+    </div>
+
+    <div class="panel glass chart-card">
+      <div class="panel-head"><h2 data-i18n="stats.clicksOverTime">Clicks over time</h2></div>
+      <canvas id="clicks-chart" height="90"></canvas>
+    </div>
+
+    <!-- Responsive grid: 2 cols on desktop, 1 on mobile -->
+    <div class="stats-breakdown-grid">
+      <div class="panel glass">
+        <div class="panel-head"><h2 data-i18n="stats.byCountry">Top countries</h2></div>
+        <div id="country-list"></div>
+      </div>
+      <div class="panel glass">
+        <div class="panel-head"><h2 data-i18n="stats.byDevice">Devices</h2></div>
+        <div id="device-list"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Mobile bottom nav -->
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <a href="/dashboard.html" class="bottom-nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-6 9 6v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>
+    <span>Dashboard</span>
+  </a>
+  <a href="/stats.html" class="bottom-nav-item active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l3 9 4-18 3 9h4"/></svg>
+    <span>Analytics</span>
+  </a>
+</nav>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/data.js"></script>
+<script src="/js/stats.js"></script>
+<script src="/js/pwa.js"></script>
+<script>
+  (function(){
+    const btn = document.getElementById('hamburger-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    function open(){ sidebar.classList.add('open'); overlay.classList.add('active'); btn.setAttribute('aria-expanded','true'); }
+    function close(){ sidebar.classList.remove('open'); overlay.classList.remove('active'); btn.setAttribute('aria-expanded','false'); }
+    btn?.addEventListener('click', () => sidebar.classList.contains('open') ? close() : open());
+    overlay?.addEventListener('click', close);
+  })();
+
+  // Auth guard
+  (async function(){
+    if (window.ShortixAuth) {
+      await window.ShortixAuth.requireAuth();
+    }
+  })();
+</script>
+</body>
+</html>

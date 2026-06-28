@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shortix — Shorten links. Track everything.</title>
+<meta name="description" content="Shortix turns long URLs into fast, branded short links with built-in analytics, QR codes and an API.">
+<link rel="icon" type="image/png" href="/images/icon-32.png">
+<link rel="apple-touch-icon" href="/images/icon-180.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0d0d1a">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.__SUPABASE_URL = '';
+  window.__SUPABASE_ANON_KEY = '';
+</script>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<div class="bg-aurora"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="/" class="brand"><img src="/images/icon-128.png" alt="Shortix logo"><span>Shortix</span></a>
+    <nav class="nav-links">
+      <a href="#features" data-i18n="nav.product">Product</a>
+      <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
+      <a href="/docs.html" data-i18n="nav.docs">API</a>
+    </nav>
+    <div class="nav-actions">
+      <div class="dropdown">
+        <button class="btn-icon" data-dropdown-trigger aria-label="Change language">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6.1 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6.1-4-9s1.5-6.3 4-9z"/></svg>
+        </button>
+        <div class="dropdown-panel" id="lang-menu">
+          <div class="dropdown-item" data-lang="en"><span>English</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="dropdown-item" data-lang="ar"><span>العربية</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="dropdown-item" data-lang="fr"><span>Français</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="dropdown-item" data-lang="es"><span>Español</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="dropdown-item" data-lang="zh"><span>中文</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="dropdown-item" data-lang="pt"><span>Português</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+        </div>
+      </div>
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a href="/dashboard.html" class="btn btn-ghost" data-i18n="nav.dashboard">Dashboard</a>
+      <a href="/dashboard.html" class="btn btn-primary" data-i18n="nav.signup">Get started</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero container">
+    <span class="badge glass"><span class="dot"></span><span data-i18n="hero.badge">Now with real-time click analytics</span></span>
+    <h1>
+      <span data-i18n="hero.title.pre">Shorten links.</span>
+      <span class="grad" data-i18n="hero.title.grad">Track</span>
+      <span data-i18n="hero.title.post">everything.</span>
+    </h1>
+    <p class="lead" data-i18n="hero.lead">Shortix turns long URLs into fast, branded short links — with analytics on clicks, countries, and devices built in.</p>
+
+    <form id="shorten-form" class="shorten-box glass">
+      <input id="url-input" type="text" inputmode="url" autocomplete="off" data-i18n-ph="hero.placeholder" placeholder="Paste a long link here...">
+      <button type="submit" class="btn btn-primary" data-i18n="hero.cta">Shorten it</button>
+    </form>
+
+    <div id="result-box" class="result-box glass">
+      <span id="result-link" class="result-link"></span>
+      <div class="result-actions">
+        <button id="qr-btn" class="btn btn-ghost btn-sm" data-i18n="hero.qr">QR code</button>
+        <button id="copy-btn" class="btn btn-primary btn-sm" data-i18n="hero.copy">Copy</button>
+      </div>
+    </div>
+    <div id="qr-box" class="hidden" style="margin:16px auto 0; width:96px; padding:8px; background:#fff; border-radius:12px;"></div>
+  </section>
+
+  <section class="proof container">
+    <div class="label" data-i18n="proof.label">Trusted by teams shipping links every day</div>
+    <div class="proof-logos">
+      <span>Nimbus</span><span>Orbitly</span><span>Frameworq</span><span>Pivota</span><span>Larkspur</span><span>Hexwave</span>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="stats-strip">
+      <div class="stat"><div class="num"><span class="grad" data-count="2400000" data-count-suffix="+">0</span></div><div class="lbl" data-i18n="stats.clicks">Links shortened daily</div></div>
+      <div class="stat"><div class="num"><span data-count="38" data-count-suffix="ms">0</span></div><div class="lbl" data-i18n="stats.speed">Redirect speed</div></div>
+      <div class="stat"><div class="num"><span data-count="99" data-count-suffix=".98%">0</span></div><div class="lbl" data-i18n="stats.uptime">Uptime</div></div>
+      <div class="stat"><div class="num"><span data-count="180" data-count-suffix="+">0</span></div><div class="lbl" data-i18n="stats.countries">Countries reached</div></div>
+    </div>
+  </section>
+
+  <section id="features" class="section container">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="features.eyebrow">Why Shortix</div>
+      <h2 data-i18n="features.title">Everything a link needs</h2>
+      <p data-i18n="features.lead">From a single QR code to a full API, Shortix gives every link a dashboard of its own.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card glass">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l3 9 4-18 3 9h4"/></svg></div>
+        <h3 data-i18n="feat1.title">Real-time analytics</h3>
+        <p data-i18n="feat1.body">Watch clicks roll in by time, country, device and browser — no setup required.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M19 14v3h-3M14 19h3"/></svg></div>
+        <h3 data-i18n="feat2.title">Instant QR codes</h3>
+        <p data-i18n="feat2.body">Every short link ships with a scannable QR code, ready for print or screen.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4L4 12l4 8M16 4l4 8-4 8"/></svg></div>
+        <h3 data-i18n="feat3.title">Developer API</h3>
+        <p data-i18n="feat3.body">Create and manage links programmatically with a simple REST API and API key.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17l6-6 4 4 6-8"/><path d="M14 7h6v6"/></svg></div>
+        <h3 data-i18n="feat4.title">Custom slugs</h3>
+        <p data-i18n="feat4.body">Pick your own short link ending on Pro — shortix.xyz/launch instead of a random code.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
+        <h3 data-i18n="feat5.title">Sub-50ms redirects</h3>
+        <p data-i18n="feat5.body">Edge-cached redirects mean your links resolve before the click even registers.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z"/></svg></div>
+        <h3 data-i18n="feat6.title">Privacy-respecting</h3>
+        <p data-i18n="feat6.body">We track aggregate location and device data — never personal identifiers.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="section container">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="pricing.eyebrow">Pricing</div>
+      <h2 data-i18n="pricing.title">Start free. Upgrade when you grow.</h2>
+      <p data-i18n="pricing.lead">No credit card required to try Shortix.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card glass">
+        <div class="plan-name" data-i18n="plan.free">Free</div>
+        <div class="price" data-i18n="plan.free.price">$0</div>
+        <div class="sub" data-i18n="plan.free.sub">For trying things out</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.free.f1">Up to 5 links, no account needed</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.free.f2">Basic click counter</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.free.f3">QR code for every link</span></li>
+        </ul>
+        <a href="/dashboard.html" class="btn btn-ghost btn-block" data-i18n="plan.free.cta">Start for free</a>
+      </div>
+      <div class="price-card glass featured">
+        <span class="popular-tag" data-i18n="plan.popular">Most popular</span>
+        <div class="plan-name" data-i18n="plan.pro">Pro</div>
+        <div class="price"><span data-i18n="plan.pro.price">$6</span><span data-i18n="plan.pro.period">/month</span></div>
+        <div class="sub" data-i18n="plan.pro.sub">For creators &amp; teams</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.pro.f1">Unlimited links</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.pro.f2">Advanced analytics</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.pro.f3">Custom slugs</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.pro.f4">No ads</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.pro.f5">Full API access</span></li>
+        </ul>
+        <button class="btn btn-primary btn-block" id="upgrade-btn" data-i18n="plan.pro.cta">Upgrade to Pro</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="brand"><img src="/images/icon-128.png" alt="Shortix"><span>Shortix</span></a>
+      <p data-i18n="footer.tagline">The link shortener with a dashboard worth checking.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4 data-i18n="footer.product">Product</h4>
+        <a href="#features" data-i18n="nav.product">Product</a>
+        <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
+        <a href="/docs.html" data-i18n="nav.docs">API</a>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.legal">Legal</h4>
+        <a href="/privacy.html" data-i18n="footer.privacy">Privacy</a>
+        <a href="/terms.html" data-i18n="footer.terms">Terms</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Shortix. <span data-i18n="footer.rights">All rights reserved.</span></span>
+    <span>shortix.xyz</span>
+  </div>
+</footer>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/data.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/pwa.js"></script>
+
+<!-- Magic-link login modal -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal glass login-panel">
+    <h3>Sign in to Shortix</h3>
+    <p class="sub">Enter your email and we'll send a magic link — no password needed.</p>
+    <div id="login-form-wrap">
+      <div class="field">
+        <label>Email address</label>
+        <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="modal-actions" style="margin-top:20px;">
+        <button type="button" class="btn btn-ghost btn-block" id="login-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary btn-block" id="login-submit">Send magic link</button>
+      </div>
+    </div>
+    <div id="login-sent-wrap" class="login-sent hidden">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 6L9 17l-5-5"/></svg>
+      <p><strong>Check your inbox!</strong></p>
+      <p class="muted" style="font-size:14px;">We sent a magic link to <span id="login-sent-email"></span>. Click it to sign in.</p>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script src="/js/stripe.js"></script>
+<script>
+  // Login modal logic
+  (function(){
+    const params = new URLSearchParams(location.search);
+
+    function openLogin(){
+      document.getElementById('login-modal').classList.add('show');
+      document.getElementById('login-form-wrap').classList.remove('hidden');
+      document.getElementById('login-sent-wrap').classList.add('hidden');
+    }
+
+    // Open on ?login=1
+    if (params.has('login')) { openLogin(); history.replaceState({}, '', location.pathname); }
+
+    document.querySelector('a[href="/dashboard.html"].btn-ghost')?.addEventListener('click', (e) => {
+      if (window.__SUPABASE_URL) { e.preventDefault(); openLogin(); }
+    });
+    document.querySelector('a[href="/dashboard.html"].btn-primary')?.addEventListener('click', (e) => {
+      if (window.__SUPABASE_URL) { e.preventDefault(); openLogin(); }
+    });
+
+    document.getElementById('login-cancel')?.addEventListener('click', () => {
+      document.getElementById('login-modal').classList.remove('show');
+    });
+    document.getElementById('login-modal')?.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('login-modal')) {
+        document.getElementById('login-modal').classList.remove('show');
+      }
+    });
+
+    document.getElementById('login-submit')?.addEventListener('click', async () => {
+      const email = document.getElementById('login-email').value.trim();
+      if (!email) return;
+      const btn = document.getElementById('login-submit');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      const result = await window.ShortixAuth?.signInWithEmail(email);
+      if (result?.error) {
+        btn.disabled = false;
+        btn.textContent = 'Send magic link';
+        alert('Error: ' + result.error);
+        return;
+      }
+      document.getElementById('login-sent-email').textContent = email;
+      document.getElementById('login-form-wrap').classList.add('hidden');
+      document.getElementById('login-sent-wrap').classList.remove('hidden');
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+
+[functions]
+  [functions."*"]
+  node_bundler = "esbuild"
+
+[[headers]]
+for = "/*"
+  [headers.values]
+  X-Frame-Options = "DENY"
+  X-Content-Type-Options = "nosniff"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  Permissions-Policy = "geolocation=(), camera=(), microphone=()"
+  Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' https://api.resend.com"
+
+[[headers]]
+for = "/sw.js"
+  [headers.values]
+  Cache-Control = "no-cache"
+
+# Short link redirect — catches /:slug and sends it to the Netlify Function
+[[redirects]]
+from = "/:slug"
+to = "/.netlify/functions/redirect/:slug"
+status = 302
+force = false
+conditions = {Role = []}
+
+# Exclude static assets and known pages from the slug catch-all
+[[redirects]]
+from = "/404.html"
+to = "/404.html"
+status = 200
+
+# Custom 404 page
+[[redirects]]
+from = "/*"
+to = "/404.html"
+status = 404
